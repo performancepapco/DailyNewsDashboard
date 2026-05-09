@@ -14,23 +14,37 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
+_scheduler = None
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    from database import init_db
-    from scheduler import setup_scheduler
+    global _scheduler
 
-    init_db()
-    logger.info("Database initialised.")
+    # Database init
+    try:
+        from database import init_db
+        init_db()
+        logger.info("Database initialised.")
+    except Exception as exc:
+        logger.error(f"Database init failed: {exc}")
 
-    scheduler = setup_scheduler()
-    scheduler.start()
-    logger.info("Scheduler started.")
+    # Scheduler (non-fatal — app still serves if this fails)
+    try:
+        from scheduler import setup_scheduler
+        _scheduler = setup_scheduler()
+        _scheduler.start()
+        logger.info("Scheduler started.")
+    except Exception as exc:
+        logger.error(f"Scheduler failed to start: {exc}")
 
     yield
 
-    scheduler.shutdown(wait=False)
-    logger.info("Scheduler stopped.")
+    if _scheduler:
+        try:
+            _scheduler.shutdown(wait=False)
+        except Exception:
+            pass
 
 
 app = FastAPI(
@@ -58,6 +72,5 @@ app.include_router(router, prefix="/api")
 
 if __name__ == "__main__":
     import uvicorn
-
     port = int(os.getenv("DASHBOARD_PORT", 8000))
     uvicorn.run("main:app", host="0.0.0.0", port=port, reload=False, log_level="info")

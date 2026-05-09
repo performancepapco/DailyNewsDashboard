@@ -3,13 +3,14 @@ services:
     name: daily-dashboard-api
     runtime: python
     rootDir: backend
-    buildCommand: pip install -r requirements.txt && python -c "import nltk; nltk.download('punkt', quiet=True); nltk.download('punkt_tab', quiet=True); nltk.download('stopwords', quiet=True)"
+    pythonVersion: "3.12.0"
+    buildCommand: pip install -r requirements.txt && python download_nltk.py
     startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
     plan: free
     envVars:
       - key: DATABASE_URL
-        sync: false          # You paste this from Supabase
+        sync: false
       - key: OPENWEATHERMAP_API_KEY
         sync: false
       - key: ALLOWED_ORIGINS
-        sync: false          # Paste your Vercel URL here after deploying frontend
+        sync: false
