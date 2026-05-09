@@ -78,8 +78,7 @@ export default function DashboardPage() {
         <div className="w-8 h-8 rounded-full border-2 border-blue-500 border-t-transparent animate-spin" />
         <p className="text-sm text-[#4a6080]">Loading intelligence dashboard…</p>
         <p className="text-xs text-[#374559] max-w-sm text-center">
-          If this is your first run, make sure the FastAPI backend is running on{" "}
-          <code className="text-blue-400">localhost:8000</code> and trigger a refresh.
+          Connecting to the data backend. This may take a moment on first load.
         </p>
       </div>
     );
@@ -89,11 +88,10 @@ export default function DashboardPage() {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen gap-4 px-4">
         <div className="text-4xl">⚠️</div>
-        <h2 className="text-lg font-semibold text-red-400">Backend Offline</h2>
+        <h2 className="text-lg font-semibold text-red-400">Backend Unavailable</h2>
         <p className="text-sm text-[#4a6080] max-w-sm text-center">
-          Cannot reach <code className="text-blue-400">localhost:8000</code>. Start the FastAPI
-          backend with <code className="text-emerald-400">python main.py</code> in the{" "}
-          <code className="text-emerald-400">backend/</code> folder, then reload this page.
+          Cannot reach the data backend. The service may be starting up — please wait
+          30 seconds and retry. If the problem persists, check the backend deployment.
         </p>
         <button
           onClick={load}
