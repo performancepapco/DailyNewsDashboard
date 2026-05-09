@@ -1,6 +1,6 @@
 "use client";
 
-import { Zap, ShieldAlert, Bot, Building2 } from "lucide-react";
+import { Zap, ShieldAlert, Bot, Building2, type LucideIcon } from "lucide-react";
 import type { Article, DashboardData } from "@/lib/api";
 
 interface Props {
@@ -13,7 +13,7 @@ function SignalSection({
   color,
   items,
 }: {
-  icon: React.FC<{ size?: number; className?: string }>;
+  icon: LucideIcon;
   label: string;
   color: string;
   items: Article[];
