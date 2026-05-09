@@ -1,0 +1,22 @@
+name: Daily Dashboard Refresh
+
+on:
+  schedule:
+    - cron: "30 3 * * *"   # 09:00 AM IST = 03:30 UTC every day
+  workflow_dispatch:         # Allow manual trigger from GitHub UI
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping backend to wake Render (if sleeping)
+        run: |
+          curl -s "${{ secrets.BACKEND_URL }}/api/health" || true
+          sleep 30
+
+      - name: Trigger daily data refresh
+        run: |
+          curl -s -X POST "${{ secrets.BACKEND_URL }}/api/refresh" \
+            -H "Content-Type: application/json" \
+            --max-time 30
+          echo "Refresh triggered at $(date -u)"
