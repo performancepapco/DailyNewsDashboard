@@ -8,13 +8,19 @@ DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./data/dashboard.db")
 # SQLite needs check_same_thread=False; PostgreSQL doesn't accept that arg
 if DATABASE_URL.startswith("sqlite"):
     pathlib.Path("data").mkdir(exist_ok=True)
-    connect_args = {"check_same_thread": False}
+    engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
 else:
-    # Render injects postgres:// but SQLAlchemy needs postgresql://
+    # Render/Supabase: postgres:// → postgresql://, require SSL
     DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
-    connect_args = {}
-
-engine = create_engine(DATABASE_URL, connect_args=connect_args)
+    if "sslmode" not in DATABASE_URL:
+        sep = "&" if "?" in DATABASE_URL else "?"
+        DATABASE_URL = f"{DATABASE_URL}{sep}sslmode=require"
+    engine = create_engine(
+        DATABASE_URL,
+        pool_pre_ping=True,        # detect stale connections
+        pool_size=2,               # stay within Supabase free-tier limits
+        max_overflow=3,
+    )
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 

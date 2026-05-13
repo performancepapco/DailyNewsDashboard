@@ -15,6 +15,7 @@ const TREND_CATEGORIES = ["google_trends", "twitter_trends"] as const;
 const NEWS_CATEGORIES = [
   "international", "national", "andhra",
   "logistics", "gconnect", "indiapost", "gazette", "ai",
+  "viral_news", "health_wealth_ai",
 ] as const;
 
 export default function DashboardPage() {

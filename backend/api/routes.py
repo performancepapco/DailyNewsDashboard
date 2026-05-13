@@ -21,6 +21,7 @@ CATEGORIES = [
     "international", "national", "andhra", "logistics",
     "gconnect", "indiapost", "gazette",
     "google_trends", "twitter_trends", "ai",
+    "viral_news", "health_wealth_ai",
 ]
 
 ARCHIVE_DIR = pathlib.Path("data/archives")
@@ -39,12 +40,14 @@ def _import_scrapers():
     from scrapers.google_trends import GoogleTrendsScraper
     from scrapers.twitter_trends import TwitterTrendsScraper
     from scrapers.ai_news import AIScraper
+    from scrapers.viral_news import ViralNewsScraper
+    from scrapers.health_wealth_ai_tools import HealthWealthAIScraper
 
     return [
         InternationalScraper(), NationalScraper(), AndhraScraper(),
         LogisticsScraper(), GConnectScraper(), IndiaPostScraper(),
         GazetteScraper(), GoogleTrendsScraper(), TwitterTrendsScraper(),
-        AIScraper(),
+        AIScraper(), ViralNewsScraper(), HealthWealthAIScraper(),
     ]
 
 
@@ -137,31 +140,36 @@ def trigger_refresh() -> int:
 
 @router.get("/dashboard", response_model=DashboardResponse)
 def get_dashboard(db: Session = Depends(get_db)):
-    today = date.today().isoformat()
-    articles = (
-        db.query(Article)
-        .filter(Article.date_key == today)
-        .order_by(Article.score.desc())
-        .all()
-    )
+    try:
+        today = date.today().isoformat()
+        articles = (
+            db.query(Article)
+            .filter(Article.date_key == today)
+            .order_by(Article.score.desc())
+            .all()
+        )
 
-    by_cat: dict = {c: [] for c in CATEGORIES}
-    for a in articles:
-        if a.category in by_cat:
-            by_cat[a.category].append(ArticleOut.model_validate(a))
+        by_cat: dict = {c: [] for c in CATEGORIES}
+        for a in articles:
+            if a.category in by_cat:
+                by_cat[a.category].append(ArticleOut.model_validate(a))
 
-    snap = db.query(DailySnapshot).filter(DailySnapshot.date == today).first()
-    last_refreshed = snap.created_at.isoformat() if snap and snap.created_at else None
+        snap = db.query(DailySnapshot).filter(DailySnapshot.date == today).first()
+        # Append Z so browsers know the stored time is UTC and convert to local (IST) correctly
+        last_refreshed = snap.created_at.isoformat() + "Z" if snap and snap.created_at else None
 
-    return DashboardResponse(
-        date=today,
-        categories={c: CategoryData(name=c, articles=items) for c, items in by_cat.items()},
-        total_items=len(articles),
-        alerts=[ArticleOut.model_validate(a) for a in articles if a.alert_level in ("critical", "important")],
-        gazette_count=len(by_cat.get("gazette", [])),
-        ai_count=len(by_cat.get("ai", [])),
-        last_refreshed=last_refreshed,
-    )
+        return DashboardResponse(
+            date=today,
+            categories={c: CategoryData(name=c, articles=items) for c, items in by_cat.items()},
+            total_items=len(articles),
+            alerts=[ArticleOut.model_validate(a) for a in articles if a.alert_level in ("critical", "important")],
+            gazette_count=len(by_cat.get("gazette", [])),
+            ai_count=len(by_cat.get("ai", [])),
+            last_refreshed=last_refreshed,
+        )
+    except Exception as exc:
+        logger.error(f"Dashboard endpoint error: {exc}", exc_info=True)
+        raise HTTPException(status_code=500, detail=str(exc))
 
 
 @router.post("/refresh", response_model=RefreshResponse)
@@ -222,3 +230,26 @@ def get_archive(date_str: str, db: Session = Depends(get_db)):
 @router.get("/health")
 def health():
     return {"status": "ok", "time": datetime.now(timezone.utc).isoformat()}
+
+
+@router.get("/db-status")
+def db_status():
+    """Diagnostic endpoint — checks DB connectivity and table existence."""
+    import sqlalchemy
+    try:
+        db = SessionLocal()
+        article_count = db.query(Article).count()
+        snap_count = db.query(DailySnapshot).count()
+        db.close()
+        return {
+            "status": "ok",
+            "database_url_scheme": DATABASE_URL.split(":")[0],
+            "article_count": article_count,
+            "snapshot_count": snap_count,
+        }
+    except Exception as exc:
+        return {
+            "status": "error",
+            "database_url_scheme": DATABASE_URL.split(":")[0],
+            "error": str(exc),
+        }

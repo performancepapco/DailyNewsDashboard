@@ -19,6 +19,8 @@ export const CATEGORY_META: Record<
   google_trends:  { label: "Google Trends",          color: "text-cyan-400",   borderColor: "border-cyan-500",   bgColor: "bg-cyan-500/10",   icon: "TrendingUp" },
   twitter_trends: { label: "X / Twitter Trends",    color: "text-sky-400",    borderColor: "border-sky-500",    bgColor: "bg-sky-500/10",    icon: "MessageSquare" },
   ai:             { label: "AI Updates",             color: "text-purple-400", borderColor: "border-purple-500", bgColor: "bg-purple-500/10", icon: "Bot" },
+  viral_news:     { label: "Viral News",             color: "text-rose-400",   borderColor: "border-rose-500",   bgColor: "bg-rose-500/10",   icon: "Flame" },
+  health_wealth_ai: { label: "Health · Wealth · AI Tools", color: "text-teal-400", borderColor: "border-teal-500", bgColor: "bg-teal-500/10", icon: "Sparkles" },
 };
 
 export const ALERT_META: Record<string, { label: string; color: string; dot: string }> = {

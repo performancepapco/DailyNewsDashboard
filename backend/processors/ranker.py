@@ -25,6 +25,18 @@ _SOURCE_AUTHORITY: Dict[str, float] = {
     "Gazette Notification": 0.90,
     "Google Trends India": 0.70,
     "X / Twitter Trends India": 0.70,
+    "Google News Viral": 0.80,
+    "Google News Trending India": 0.80,
+    "Mashable": 0.78,
+    "TIME": 0.88,
+    "Reddit World News": 0.75,
+    "WHO": 0.95,
+    "WebMD": 0.85,
+    "Health News": 0.78,
+    "Wealth & Finance": 0.78,
+    "Moneycontrol": 0.85,
+    "AI Tools News": 0.80,
+    "VentureBeat AI": 0.88,
 }
 
 _CATEGORY_KEYWORDS: Dict[str, List[str]] = {
@@ -61,6 +73,15 @@ _CATEGORY_KEYWORDS: Dict[str, List[str]] = {
     "ai": [
         "ai", "llm", "gpt", "model", "neural", "robot", "automation",
         "generative", "openai", "anthropic", "deepmind", "agent",
+    ],
+    "viral_news": [
+        "viral", "trending", "popular", "sensation", "goes viral",
+        "most read", "breaking", "shocking", "world record", "extraordinary",
+    ],
+    "health_wealth_ai": [
+        "health", "wellness", "fitness", "medical", "wealth", "investment",
+        "finance", "savings", "ai tool", "new tool", "launch", "productivity",
+        "mental health", "nutrition", "portfolio", "passive income",
     ],
 }
 
