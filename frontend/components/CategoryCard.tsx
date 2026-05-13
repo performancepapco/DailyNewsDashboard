@@ -23,7 +23,6 @@ export default function CategoryCard({ category, data }: Props) {
     icon: "Newspaper",
   };
 
-  // Resolve lucide icon dynamically
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const IconComp = (Icons as any)[meta.icon] as React.FC<{ size?: number; className?: string }>;
 
@@ -38,7 +37,7 @@ export default function CategoryCard({ category, data }: Props) {
       <button
         onClick={() => setExpanded((p) => !p)}
         className="flex items-center justify-between px-4 py-3.5 w-full text-left
-                   hover:bg-white/[0.03] transition-colors"
+                   hover:bg-[var(--c-ov-xs)] transition-colors"
       >
         <div className="flex items-center gap-2.5">
           <span className={`p-1.5 rounded-md ${meta.bgColor}`}>
@@ -47,11 +46,11 @@ export default function CategoryCard({ category, data }: Props) {
           <span className={`text-sm font-semibold font-display ${meta.color}`}>
             {meta.label}
           </span>
-          <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-white/10 text-[#8899b4] font-medium">
+          <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-[var(--c-ov-lg)] text-[var(--c-text-sec)] font-medium">
             {data.articles.length}
           </span>
         </div>
-        <span className="text-[#4a6080]">
+        <span style={{ color: "var(--c-text-muted)" }}>
           {expanded ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
         </span>
       </button>
@@ -73,7 +72,7 @@ export default function CategoryCard({ category, data }: Props) {
                   <NewsItem key={article.id} article={article} index={i} />
                 ))
               ) : (
-                <p className="text-xs text-[#4a6080] px-2 py-4 text-center italic">
+                <p className="text-xs px-2 py-4 text-center italic" style={{ color: "var(--c-text-muted)" }}>
                   No data yet — trigger a refresh to load this category.
                 </p>
               )}

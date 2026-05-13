@@ -19,9 +19,19 @@ export default function NewsItem({ article, index }: Props) {
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.05, duration: 0.3 }}
       className="group relative flex flex-col gap-1 px-4 py-3 rounded-lg
-                 bg-white/[0.03] hover:bg-white/[0.06]
-                 border border-white/[0.05] hover:border-white/[0.10]
                  transition-all duration-200 cursor-pointer"
+      style={{
+        background: "var(--c-ov-xs)",
+        border: "1px solid var(--c-ov-bd)",
+      }}
+      onMouseEnter={(e) => {
+        (e.currentTarget as HTMLDivElement).style.background = "var(--c-ov-md)";
+        (e.currentTarget as HTMLDivElement).style.borderColor = "var(--c-ov-bd-ho)";
+      }}
+      onMouseLeave={(e) => {
+        (e.currentTarget as HTMLDivElement).style.background = "var(--c-ov-xs)";
+        (e.currentTarget as HTMLDivElement).style.borderColor = "var(--c-ov-bd)";
+      }}
     >
       {/* Alert dot */}
       {alert.dot && (
@@ -33,8 +43,8 @@ export default function NewsItem({ article, index }: Props) {
         href={article.url}
         target="_blank"
         rel="noopener noreferrer"
-        className="text-sm font-medium text-[#e2eaf8] leading-snug
-                   group-hover:text-white transition-colors pr-5"
+        className="text-sm font-medium leading-snug pr-5 transition-colors"
+        style={{ color: "var(--c-text-med)" }}
       >
         {article.title}
         <ExternalLink
@@ -45,23 +55,23 @@ export default function NewsItem({ article, index }: Props) {
 
       {/* Summary */}
       {article.summary && (
-        <p className="text-xs text-[#8899b4] leading-relaxed line-clamp-2">
+        <p className="text-xs leading-relaxed line-clamp-2" style={{ color: "var(--c-text-sec)" }}>
           {article.summary}
         </p>
       )}
 
       {/* Meta row */}
       <div className="flex items-center gap-3 mt-0.5">
-        <span className="text-[10px] font-medium text-[#4a6080] uppercase tracking-wide">
+        <span className="text-[10px] font-medium uppercase tracking-wide" style={{ color: "var(--c-text-muted)" }}>
           {article.source}
         </span>
-        <span className="text-[10px] text-[#374559]">·</span>
-        <span className="text-[10px] text-[#4a6080]">
+        <span className="text-[10px]" style={{ color: "var(--c-text-faint)" }}>·</span>
+        <span className="text-[10px]" style={{ color: "var(--c-text-muted)" }}>
           {formatRelativeTime(article.published_at)}
         </span>
         {alert.label && (
           <>
-            <span className="text-[10px] text-[#374559]">·</span>
+            <span className="text-[10px]" style={{ color: "var(--c-text-faint)" }}>·</span>
             <span className={`text-[10px] font-semibold uppercase tracking-wide ${alert.color}`}>
               {alert.label}
             </span>

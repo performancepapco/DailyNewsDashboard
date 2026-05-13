@@ -25,7 +25,7 @@ function SignalSection({
         <span className={`text-xs font-bold uppercase tracking-widest ${color}`}>{label}</span>
       </div>
       {items.length === 0 ? (
-        <p className="text-xs text-[#374559] italic">Nothing flagged today.</p>
+        <p className="text-xs italic" style={{ color: "var(--c-text-faint)" }}>Nothing flagged today.</p>
       ) : (
         <ul className="flex flex-col gap-1.5">
           {items.slice(0, 4).map((a) => (
@@ -34,7 +34,8 @@ function SignalSection({
                 href={a.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-xs text-[#8899b4] hover:text-[#e2eaf8] transition-colors leading-relaxed flex items-start gap-1.5"
+                className={`text-xs leading-relaxed flex items-start gap-1.5 transition-colors hover:text-[var(--c-text-med)]`}
+                style={{ color: "var(--c-text-sec)" }}
               >
                 <span className={`${color} mt-0.5 shrink-0`}>›</span>
                 <span>{a.title}</span>
@@ -61,7 +62,7 @@ export default function StrategicSignals({ data }: Props) {
 
   return (
     <section className="mt-8 mb-6">
-      <h2 className="text-xs font-semibold text-[#4a6080] uppercase tracking-widest mb-3 px-1">
+      <h2 className="text-xs font-semibold uppercase tracking-widest mb-3 px-1" style={{ color: "var(--c-text-muted)" }}>
         Today's Strategic Summary
       </h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">

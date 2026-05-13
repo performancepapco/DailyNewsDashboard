@@ -107,7 +107,7 @@ export default function DashboardPage() {
   const d = visible ?? data!;
 
   return (
-    <div className="min-h-screen bg-[#0B1220]">
+    <div className="min-h-screen bg-[var(--c-bg)]">
       <Header
         date={d.date}
         totalItems={d.total_items}
@@ -156,8 +156,8 @@ export default function DashboardPage() {
         {data && <StrategicSignals data={data} />}
 
         {/* Footer */}
-        <footer className="flex items-center justify-between py-4 border-t border-[#1f2d45] no-print">
-          <p className="text-[10px] text-[#374559]">
+        <footer className="flex items-center justify-between py-4 border-t border-[var(--c-border)] no-print">
+          <p className="text-[10px] text-[var(--c-text-faint)]">
             Executive Intelligence Dashboard · Fully local · Auto-refreshes daily at 09:00 AM IST
           </p>
           <ExportMenu />

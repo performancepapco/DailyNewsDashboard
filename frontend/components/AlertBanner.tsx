@@ -40,7 +40,7 @@ export default function AlertBanner({ alerts }: Props) {
 
   return (
     <div className="flex flex-col gap-2">
-      <h2 className="text-xs font-semibold text-[#4a6080] uppercase tracking-widest px-1">
+      <h2 className="text-xs font-semibold uppercase tracking-widest px-1" style={{ color: "var(--c-text-muted)" }}>
         Active Alerts
       </h2>
       <AnimatePresence>
@@ -67,8 +67,8 @@ export default function AlertBanner({ alerts }: Props) {
                 <span className={`text-[10px] font-bold uppercase tracking-widest ${cfg.text} mr-2`}>
                   {cfg.label}
                 </span>
-                <span className="text-xs text-[#c8d8f0] leading-snug">{alert.title}</span>
-                <span className="block text-[10px] text-[#4a6080] mt-0.5">{alert.source}</span>
+                <span className="text-xs leading-snug" style={{ color: "var(--c-text-med)" }}>{alert.title}</span>
+                <span className="block text-[10px] mt-0.5" style={{ color: "var(--c-text-muted)" }}>{alert.source}</span>
               </div>
             </motion.a>
           );

@@ -23,22 +23,26 @@ export default function SearchBar({ onSearch }: Props) {
     <div className="flex flex-wrap items-center gap-2 no-print">
       {/* Search input */}
       <div className="relative flex-1 min-w-[200px]">
-        <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2 text-[#4a6080]" />
+        <Search size={13} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: "var(--c-text-muted)" }} />
         <input
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Search headlines, sources…"
           className="w-full pl-8 pr-8 py-2 rounded-lg text-xs
-                     bg-[#111827] border border-[#1f2d45] text-[#e2eaf8]
-                     placeholder:text-[#374559] focus:outline-none
-                     focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/20
+                     focus:outline-none focus:ring-1 focus:ring-blue-500/20
                      transition-all duration-200"
+          style={{
+            background: "var(--c-bg-panel)",
+            border: "1px solid var(--c-border)",
+            color: "var(--c-text-med)",
+          }}
         />
         {query && (
           <button
             onClick={() => setQuery("")}
-            className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[#4a6080] hover:text-[#8899b4]"
+            className="absolute right-2.5 top-1/2 -translate-y-1/2 transition-colors"
+            style={{ color: "var(--c-text-muted)" }}
           >
             <X size={12} />
           </button>
@@ -47,14 +51,19 @@ export default function SearchBar({ onSearch }: Props) {
 
       {/* Category filter */}
       <div className="flex items-center gap-1.5 flex-wrap">
-        <Filter size={11} className="text-[#4a6080]" />
+        <Filter size={11} style={{ color: "var(--c-text-muted)" }} />
         <button
           onClick={() => setCategory(ALL)}
           className={`text-[10px] px-2 py-1 rounded-md font-medium transition-colors ${
             category === ALL
               ? "bg-blue-600/30 text-blue-300 border border-blue-500/30"
-              : "bg-white/5 text-[#4a6080] border border-white/10 hover:bg-white/10"
+              : "border hover:bg-[var(--c-ov-md)]"
           }`}
+          style={category !== ALL ? {
+            background: "var(--c-ov-sm)",
+            color: "var(--c-text-muted)",
+            borderColor: "var(--c-ov-bd)",
+          } : undefined}
         >
           All
         </button>
@@ -65,8 +74,13 @@ export default function SearchBar({ onSearch }: Props) {
             className={`text-[10px] px-2 py-1 rounded-md font-medium transition-colors ${
               category === key
                 ? `${meta.bgColor} ${meta.color} border ${meta.borderColor}/40`
-                : "bg-white/5 text-[#4a6080] border border-white/10 hover:bg-white/10"
+                : "border"
             }`}
+            style={category !== key ? {
+              background: "var(--c-ov-sm)",
+              color: "var(--c-text-muted)",
+              borderColor: "var(--c-ov-bd)",
+            } : undefined}
           >
             {meta.label}
           </button>
