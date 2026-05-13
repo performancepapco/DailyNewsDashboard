@@ -141,12 +141,16 @@ export default function DashboardPage() {
           ))}
         </div>
 
-        {/* Main news grid — 3 columns on large screens */}
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3 items-start">
+        {/* Main news — masonry columns, cards flow top-to-bottom and fill gaps */}
+        <div className="columns-1 md:columns-2 xl:columns-3 gap-3">
           {NEWS_CATEGORIES.map((cat) => {
             const catData = d.categories[cat];
             if (!catData || catData.articles.length === 0) return null;
-            return <CategoryCard key={cat} category={cat} data={catData} />;
+            return (
+              <div key={cat} className="break-inside-avoid mb-3">
+                <CategoryCard category={cat} data={catData} />
+              </div>
+            );
           })}
         </div>
 
