@@ -27,16 +27,18 @@ _SOURCE_AUTHORITY: Dict[str, float] = {
     "X / Twitter Trends India": 0.70,
     "Google News Viral": 0.80,
     "Google News Trending India": 0.80,
-    "Mashable": 0.78,
     "TIME": 0.88,
-    "Reddit World News": 0.75,
+    "BBC News": 0.92,
+    "The Guardian": 0.90,
     "WHO": 0.95,
-    "WebMD": 0.85,
+    "Healthline": 0.82,
     "Health News": 0.78,
-    "Wealth & Finance": 0.78,
+    "Finance News India": 0.78,
     "Moneycontrol": 0.85,
+    "ET Wealth": 0.87,
     "AI Tools News": 0.80,
     "VentureBeat AI": 0.88,
+    "TechCrunch AI": 0.87,
 }
 
 _CATEGORY_KEYWORDS: Dict[str, List[str]] = {

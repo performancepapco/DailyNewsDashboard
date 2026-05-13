@@ -7,10 +7,12 @@ from bs4 import BeautifulSoup
 
 logger = logging.getLogger(__name__)
 
+_UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36"
+
 
 def parse_rss_feed(url: str, source_name: str, category: str, max_items: int = 10) -> List[Dict[str, Any]]:
     try:
-        feed = feedparser.parse(url)
+        feed = feedparser.parse(url, agent=_UA)
         items = []
 
         for entry in feed.entries[:max_items]:

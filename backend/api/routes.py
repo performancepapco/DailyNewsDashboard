@@ -63,7 +63,7 @@ def _fetch_and_store(db: Session) -> int:
         try:
             raw = scraper.run()
             raw = deduplicate(raw)
-            ranked = rank_articles(raw, top_n=5)
+            ranked = rank_articles(raw, top_n=getattr(scraper, "top_n", 5))
 
             for item in ranked:
                 summary = summarize_article(item.get("title", ""), item.get("summary", ""))
