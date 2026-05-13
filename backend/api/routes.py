@@ -2,7 +2,7 @@ import json
 import logging
 import pathlib
 from datetime import date, datetime, timezone
-from typing import List
+from typing import List, Dict, Any
 
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
 from sqlalchemy.orm import Session
@@ -11,8 +11,8 @@ from database import SessionLocal, get_db, DATABASE_URL
 from models import Article, DailySnapshot
 from schemas import ArticleOut, CategoryData, DashboardResponse, RefreshResponse
 from processors.summarizer import summarize_article
-from processors.ranker import rank_articles
-from processors.deduplicator import deduplicate
+from processors.ranker import score_article, determine_alert_level
+from processors.deduplicator import deduplicate, global_deduplicate
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -52,20 +52,46 @@ def _import_scrapers():
 
 
 def _fetch_and_store(db: Session) -> int:
+    from collections import defaultdict
     today = date.today().isoformat()
 
-    # Clear today's stale data
     db.query(Article).filter(Article.date_key == today).delete()
     db.commit()
 
-    total = 0
+    # Per-category article limits (default 5, extended for wider categories)
+    _CAT_LIMIT: Dict[str, int] = {"viral_news": 10, "health_wealth_ai": 10}
+
+    # ── Phase 1: score → per-scraper dedup → collect candidates ──
+    all_candidates: List[Dict[str, Any]] = []
     for scraper in _import_scrapers():
         try:
             raw = scraper.run()
+            # Pre-score so dedup can prefer authoritative sources over weaker ones
+            for a in raw:
+                a["score"] = score_article(a)
+                a["alert_level"] = determine_alert_level(a.get("title", ""), a.get("summary", ""))
             raw = deduplicate(raw)
-            ranked = rank_articles(raw, top_n=getattr(scraper, "top_n", 5))
+            top_n = getattr(scraper, "top_n", 5)
+            # Carry 2× the final limit into the global pool so global dedup has choices
+            candidates = sorted(raw, key=lambda x: x["score"], reverse=True)[: top_n * 2]
+            all_candidates.extend(candidates)
+            logger.info(f"{scraper.__class__.__name__}: {len(candidates)} candidates")
+        except Exception as exc:
+            logger.error(f"{scraper.__class__.__name__} failed: {exc}")
 
-            for item in ranked:
+    # ── Phase 2: cross-category dedup — one story, one slot ──────
+    all_candidates = global_deduplicate(all_candidates)
+
+    # ── Phase 3: trim each category to its limit and store ────────
+    by_cat: Dict[str, List] = defaultdict(list)
+    for item in all_candidates:
+        by_cat[item.get("category", "")].append(item)
+
+    total = 0
+    try:
+        for cat, items in by_cat.items():
+            # Items already sorted by score desc (global_deduplicate preserves this)
+            for item in items[: _CAT_LIMIT.get(cat, 5)]:
                 summary = summarize_article(item.get("title", ""), item.get("summary", ""))
                 db.add(Article(
                     date_key=today,
@@ -79,13 +105,11 @@ def _fetch_and_store(db: Session) -> int:
                     alert_level=item.get("alert_level", "none"),
                 ))
                 total += 1
-
-            db.commit()
-            logger.info(f"{scraper.__class__.__name__}: saved {len(ranked)} articles")
-
-        except Exception as exc:
-            logger.error(f"{scraper.__class__.__name__} failed: {exc}")
-            db.rollback()
+        db.commit()
+        logger.info(f"Stored {total} articles after global dedup")
+    except Exception as exc:
+        logger.error(f"DB commit failed: {exc}")
+        db.rollback()
 
     _save_snapshot(db, today, total)
     _cleanup_old_archives(db)

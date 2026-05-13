@@ -131,7 +131,7 @@ export default function DashboardPage() {
         />
 
         {/* Trend cards — horizontal pair */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 items-start">
           {TREND_CATEGORIES.map((cat) => (
             <TrendCard
               key={cat}
@@ -142,12 +142,10 @@ export default function DashboardPage() {
         </div>
 
         {/* Main news grid — 3 columns on large screens */}
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3 items-start">
           {NEWS_CATEGORIES.map((cat) => {
             const catData = d.categories[cat];
-            if (!catData) return null;
-            // Skip empty categories when searching
-            if ((searchQuery || searchCategory !== "all") && catData.articles.length === 0) return null;
+            if (!catData || catData.articles.length === 0) return null;
             return <CategoryCard key={cat} category={cat} data={catData} />;
           })}
         </div>
